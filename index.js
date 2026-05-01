@@ -562,6 +562,7 @@ class DreamPlugin extends Plugin {
         let searchUsed = 0;
         const MAX_ROUNDS = tools ? (maxSearch + 2) : 1;
 
+        try {
         for (let round = 1; round <= MAX_ROUNDS; round++) {
             const body = {
                 model,
@@ -643,6 +644,9 @@ class DreamPlugin extends Plugin {
         }
 
         this.context.log('warn', `[AgentDream] LLM 工具调用循环超过 ${MAX_ROUNDS} 轮，使用累计文本作为最终结果`);
+        } catch (err) {
+            this.context.log('error', `[AgentDream] _callDreamLLM 异常（将返回累计部分）: ${err.message}`);
+        }
         return narrativeParts.length > 0
             ? { narrative: narrativeParts.join('\n\n'), curiosity }
             : null;
