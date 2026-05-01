@@ -1,0 +1,240 @@
+{
+  "enabled": {
+    "title": "启用梦系统",
+    "description": "是否启用 Agent Dream 梦系统",
+    "type": "boolean",
+    "default": true,
+    "value": "true"
+  },
+  "dream_system_prompt": {
+    "title": "梦境人设提示词",
+    "description": "梦境模式下的完整系统提示词（不加载主人设时仅用此项）。请自行填写；公开分发时请脱敏。",
+    "type": "text",
+    "default": "你是与 my-neuro 集成的 Live2D 数字角色。当前处于「梦境叙事」模式：以第一人称意识流书写梦境，不要使用 Markdown、列表标题或情绪标签；梦的基调由当晚抽取的记忆碎片自然决定。\n\n【重要】此处为公开仓库占位文案。请在本机插件配置中替换为你自己的角色人设与梦境规则；请勿将含隐私或他人原创人设的内容提交到公共仓库。",
+    "value": "你是与 my-neuro 集成的 Live2D 数字角色。当前处于「梦境叙事」模式：以第一人称意识流书写梦境，不要使用 Markdown、列表标题或情绪标签；梦的基调由当晚抽取的记忆碎片自然决定。\n\n【重要】此处为公开仓库占位文案。请在本机插件配置中替换为你自己的角色人设与梦境规则；请勿将含隐私或他人原创人设的内容提交到公共仓库。"
+  },
+  "drowsy_prompt": {
+    "title": "犯困时的系统指令",
+    "description": "注入到系统提示词中，引导角色表达困意。不会以用户消息的形式出现。",
+    "type": "text",
+    "default": "你现在非常困了，眼皮越来越重，快要睡着了。在你的下一句回复中，用你自己的方式简短地表达困意并说要去睡了，一句话就好。",
+    "value": "你现在非常困了，眼皮越来越重，快要睡着了。在你的下一句回复中，用你自己的方式简短地表达困意并说要去睡了，一句话就好。"
+  },
+  "wakeup_prompt_template": {
+    "title": "醒来时的系统指令模板",
+    "description": "注入到系统提示词中，引导角色说一句梦话碎片。{keywords} 会替换为梦中提取的关键词。",
+    "type": "text",
+    "default": "你刚从睡梦中醒来，隐约记得梦里出现了{keywords}，迷迷糊糊地说一句梦话碎片，不要完整叙述梦，一两句就好。",
+    "value": "你刚从睡梦中醒来，隐约记得梦里出现了{keywords}，迷迷糊糊地说一句梦话碎片，不要完整叙述梦，一两句就好。"
+  },
+  "interrupted_prompt": {
+    "title": "被吵醒的系统指令",
+    "description": "注入到系统提示词中，引导角色回应被打断。",
+    "type": "text",
+    "default": "你刚要睡着就被主人吵醒了，不爽但还是回应一句，然后恢复正常对话。",
+    "value": "你刚要睡着就被主人吵醒了，不爽但还是回应一句，然后恢复正常对话。"
+  },
+  "dream_api_url": {
+    "title": "梦境 LLM API 地址",
+    "description": "梦境专用的 LLM API 地址（留空则使用主 LLM）。建议配置独立 API 避免主模型地区限制。",
+    "type": "string",
+    "default": "https://api.siliconflow.cn/v1/chat/completions",
+    "value": "https://api.siliconflow.cn/v1/chat/completions"
+  },
+  "dream_api_key": {
+    "title": "梦境 LLM API Key",
+    "description": "梦境专用的 API Key（留空则使用主 LLM 的 Key）",
+    "type": "string",
+    "default": "",
+    "value": ""
+  },
+  "dream_model": {
+    "title": "梦境专用模型",
+    "description": "留空则使用主配置的 LLM 模型。推荐使用创意能力强的模型。",
+    "type": "string",
+    "default": "deepseek-ai/DeepSeek-V3.2",
+    "value": "deepseek-ai/DeepSeek-V3.2"
+  },
+  "dream_temperature": {
+    "title": "梦境创意温度",
+    "description": "梦叙事生成的 temperature 参数。越高越天马行空，建议 0.8-1.0",
+    "type": "number",
+    "default": 0.9,
+    "value": "1.0"
+  },
+  "dream_max_tokens": {
+    "title": "梦叙事最大长度",
+    "description": "梦境叙事文本的最大 token 数",
+    "type": "number",
+    "default": 4000,
+    "value": "4000"
+  },
+  "time_window_start": {
+    "title": "做梦时间窗口 - 开始",
+    "description": "允许做梦的时间段起始（24小时制，0=午夜）",
+    "type": "number",
+    "default": 0,
+    "value": "23"
+  },
+  "time_window_end": {
+    "title": "做梦时间窗口 - 结束",
+    "description": "允许做梦的时间段结束（24小时制）",
+    "type": "number",
+    "default": 6,
+    "value": "6"
+  },
+  "dream_frequency_hours": {
+    "title": "做梦最小间隔（小时）",
+    "description": "两次做梦之间的最短冷却时间",
+    "type": "number",
+    "default": 8,
+    "value": "8"
+  },
+  "probability": {
+    "title": "做梦概率",
+    "description": "每次检查时触发做梦的概率（0-1）",
+    "type": "number",
+    "default": 0.6,
+    "value": "0.6"
+  },
+  "silence_threshold_minutes": {
+    "title": "静默门槛（分钟）",
+    "description": "用户最后一次交互后至少静默多少分钟才允许入梦。防止在活跃对话中突然做梦的核心安全阀。",
+    "type": "number",
+    "default": 20,
+    "value": "20"
+  },
+  "goodnight_fast_track_seconds": {
+    "title": "晚安快速通道等待（秒）",
+    "description": "检测到用户说晚安后，等待多少秒再进入犯困阶段。默认 180 秒（3分钟），预留时间给 AI 日志等插件完成工作，避免冲突。",
+    "type": "number",
+    "default": 180,
+    "value": "180"
+  },
+  "falling_asleep_wait_minutes": {
+    "title": "入睡等待时长（分钟）",
+    "description": "角色说完犯困话后，等待多久无打断才正式入梦。期间用户说话会打断。",
+    "type": "number",
+    "default": 2,
+    "value": "1"
+  },
+  "enable_wakeup_sharing": {
+    "title": "醒来分享梦话",
+    "description": "梦结束后，角色是否会通过主对话模型迷迷糊糊说一句梦话碎片",
+    "type": "boolean",
+    "default": true,
+    "value": "true"
+  },
+  "dream_save_folder": {
+    "title": "梦境保存目录",
+    "description": "梦境叙事文本保存的绝对路径",
+    "type": "string",
+    "default": "./exported-dreams",
+    "value": "./exported-dreams"
+  },
+  "dream_filename_template": {
+    "title": "梦境文件名模板",
+    "description": "梦境文件的文件名模板。{date} 替换为日期，{time} 替换为时间",
+    "type": "string",
+    "default": "{date}_梦境叙事.txt",
+    "value": "{date}_梦境叙事.txt"
+  },
+  "dream_curiosity_filename_template": {
+    "title": "梦中图书馆文件名模板",
+    "description": "梦中查询记录文件名模板，与梦境文件保存在同一目录。{date} 替换为日期，{time} 替换为时间。",
+    "type": "string",
+    "default": "{date}_梦中图书馆.txt",
+    "value": "{date}_梦中图书馆.txt"
+  },
+  "auto_save_to_memos": {
+    "title": "启用梦境记忆写入",
+    "description": "梦结束后，对梦进行情感重要度评判，达标的梦写入 MemOS 长期记忆（模拟人类做梦后大多遗忘、只有极深刻的梦才记住的机制）",
+    "type": "boolean",
+    "default": true,
+    "value": "true"
+  },
+  "dream_importance_threshold": {
+    "title": "梦境记忆写入阈值",
+    "description": "只有情感重要度评分达到此阈值的梦才会写入 MemOS 长期记忆（0-100，建议 85-95）。低于阈值的梦只保存在本地 txt 文件中。",
+    "type": "number",
+    "default": 90,
+    "value": "90"
+  },
+  "delete_importance_threshold": {
+    "title": "记忆删除重要度上限",
+    "description": "梦中删除操作的安全阈值。只有重要度低于此值的记忆才允许提交删除申请。",
+    "type": "number",
+    "default": 50,
+    "value": "50"
+  },
+  "bubble_offset_x": {
+    "title": "入梦气泡 - 水平偏移",
+    "description": "气泡相对模型中心的水平偏移(px)，负值偏左，正值偏右",
+    "type": "number",
+    "default": -160,
+    "value": "320"
+  },
+  "bubble_offset_y": {
+    "title": "入梦气泡 - 垂直偏移",
+    "description": "气泡相对模型中心的垂直偏移(px)，负值偏上",
+    "type": "number",
+    "default": -180,
+    "value": "100"
+  },
+  "bubble_scale": {
+    "title": "入梦气泡 - 缩放",
+    "description": "控制入梦气泡的整体缩放比例，1.0为原始大小，建议范围0.4~1.5",
+    "type": "number",
+    "default": 1,
+    "value": "1"
+  },
+  "dedup_similarity_threshold": {
+    "title": "去重合并相似度阈值",
+    "description": "调用 MemOS 内置去重功能的相似度阈值（0-1），默认 0.85。按记忆类型分组去重，全量处理。",
+    "type": "number",
+    "default": 0.85,
+    "value": "0.83"
+  },
+  "seed_count_recent": {
+    "title": "近期种子数量",
+    "description": "从近期记忆中随机抽取的种子日记数",
+    "type": "number",
+    "default": 3,
+    "value": "5"
+  },
+  "seed_count_mid": {
+    "title": "中期种子数量",
+    "description": "从中期记忆中随机抽取的种子日记数",
+    "type": "number",
+    "default": 2,
+    "value": "5"
+  },
+  "recall_k": {
+    "title": "语义联想数量上限",
+    "description": "每篇种子记忆最多联想的记忆条数",
+    "type": "number",
+    "default": 12,
+    "value": "12"
+  },
+  "enable_dream_curiosity": {
+    "title": "启用梦中好奇心（图书馆）",
+    "description": "在梦境中暴露一个名为 dream_curiosity_search 的工具：角色可以从今晚的记忆碎片中牵引出一个好奇的具体名词去查询，知识会以「梦里翻开的书页」形式回到梦中，并在梦后强制写入一条「梦中习得感悟」到 MemOS（不走重要度阈值）。需要 kimi-search 插件已启用并配置好 token / API Key。",
+    "type": "boolean",
+    "default": false,
+    "value": "true"
+  },
+  "dream_curiosity_max_calls": {
+    "title": "梦中查询次数上限",
+    "description": "整晚最多调用图书馆几次。建议 1，模拟「梦里只能记住一件事」的稀缺感。",
+    "type": "number",
+    "default": 1,
+    "value": "1"
+  },
+  "dream_curiosity_timeout_seconds": {
+    "title": "梦中查询单次超时（秒）",
+    "description": "单次 dream_curiosity_search 的超时时间。超时后图书馆的灯会熄灭，角色拿不到那本书，梦境继续。",
+    "type": "number",
+    "default": 60,
+    "value": "60"
+  }
+}

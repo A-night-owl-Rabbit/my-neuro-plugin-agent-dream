@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>梦境审批</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            background: #0a0a1a;
+            color: #c8c8e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            color: #a0a0d0;
+            font-size: 18px;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        .dream-card {
+            background: #12122a;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .dream-card h3 {
+            color: #8080c0;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .narrative {
+            background: #0d0d20;
+            border: 1px solid #1a1a3a;
+            border-radius: 6px;
+            padding: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #b0b0d0;
+        }
+        .op-card {
+            background: #15152a;
+            border: 1px solid #2a2a4a;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+        .op-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .op-type {
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .op-type.merge { color: #60a0e0; }
+        .op-type.delete { color: #e06060; }
+        .op-type.insight { color: #60c080; }
+        .op-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .op-status.pending { background: #3a3a20; color: #e0c060; }
+        .op-status.approved { background: #1a3a1a; color: #60c060; }
+        .op-status.rejected { background: #3a1a1a; color: #e06060; }
+        .op-content {
+            font-size: 12px;
+            color: #9090b0;
+            margin: 6px 0;
+            white-space: pre-wrap;
+        }
+        .op-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .btn {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: opacity 0.2s;
+        }
+        .btn:hover { opacity: 0.8; }
+        .btn:disabled { opacity: 0.4; cursor: default; }
+        .btn-approve { background: #2a5a2a; color: #a0e0a0; }
+        .btn-reject { background: #5a2a2a; color: #e0a0a0; }
+        .empty {
+            text-align: center;
+            color: #606080;
+            padding: 40px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>梦境审批面板</h1>
+    <div id="content"><div class="empty">加载中...</div></div>
+    <script src="approval-window.js"></script>
+</body>
+</html>

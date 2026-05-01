@@ -1,0 +1,5 @@
+exported-dreams/
+dream_logs/
+*.log
+.DS_Store
+Thumbs.db
