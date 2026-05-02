@@ -57,22 +57,29 @@ class DreamScheduler {
         const now = new Date();
         const hour = now.getHours();
 
-        const start = this.cfg.time_window_start ?? 0;
-        const end = this.cfg.time_window_end ?? 6;
+        // 配置 value 可能被 UI 存成字符串，此处强转防止 "23" <= "6" 的字典序陷阱
+        const start = Number(this.cfg.time_window_start ?? 0);
+        const end = Number(this.cfg.time_window_end ?? 6);
         let inWindow = false;
-        if (start <= end) {
-            inWindow = hour >= start && hour < end;
+        if (Number.isFinite(start) && Number.isFinite(end)) {
+            if (start <= end) {
+                inWindow = hour >= start && hour < end;
+            } else {
+                inWindow = hour >= start || hour < end;
+            }
         } else {
-            inWindow = hour >= start || hour < end;
+            inWindow = true;
         }
 
         if (!inWindow) return;
 
-        const frequencyMs = (this.cfg.dream_frequency_hours || 8) * 3600000;
+        const freqHours = Number(this.cfg.dream_frequency_hours) || 8;
+        const frequencyMs = freqHours * 3600000;
         if (Date.now() - this._lastDreamTime < frequencyMs) return;
 
         const roll = Math.random();
-        if (roll >= (this.cfg.probability || 0.6)) return;
+        const probability = Number(this.cfg.probability);
+        if (roll >= (Number.isFinite(probability) ? probability : 0.6)) return;
 
         const { allowed, reason } = this.transition.canDreamNow();
         if (!allowed) {

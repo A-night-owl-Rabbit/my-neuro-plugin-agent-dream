@@ -62,7 +62,8 @@ class SleepTransition {
 
     canDreamNow() {
         const silenceMin = this.getSilenceMinutes();
-        const threshold = this.cfg.silence_threshold_minutes || 20;
+        const rawThreshold = Number(this.cfg.silence_threshold_minutes);
+        const threshold = Number.isFinite(rawThreshold) && rawThreshold >= 0 ? rawThreshold : 20;
 
         if (silenceMin < threshold) {
             return { allowed: false, reason: `静默 ${silenceMin.toFixed(1)} 分钟 < 门槛 ${threshold} 分钟` };
@@ -88,7 +89,9 @@ class SleepTransition {
         this.callbacks.onFallingAsleep();
 
         return new Promise((resolve, reject) => {
-            const waitMs = (this.cfg.falling_asleep_wait_minutes || 2) * 60000;
+            const rawMin = Number(this.cfg.falling_asleep_wait_minutes);
+            const waitMin = Number.isFinite(rawMin) && rawMin > 0 ? rawMin : 2;
+            const waitMs = waitMin * 60000;
 
             this._fallingAsleepTimer = setTimeout(() => {
                 this._fallingAsleepTimer = null;
@@ -146,7 +149,8 @@ class SleepTransition {
     }
 
     _startGoodnightCountdown() {
-        const waitSec = this.cfg.goodnight_fast_track_seconds || 180;
+        const rawWait = Number(this.cfg.goodnight_fast_track_seconds);
+        const waitSec = Number.isFinite(rawWait) && rawWait > 0 ? rawWait : 180;
         this.context.log('info', `[AgentDream] 晚安快速通道：等待 ${waitSec} 秒（预留时间给 AI 日志等插件完成工作）...`);
 
         this._goodnightTimer = setTimeout(async () => {
@@ -177,8 +181,15 @@ class SleepTransition {
 
     _isInTimeWindow() {
         const hour = new Date().getHours();
-        const start = this.cfg.time_window_start ?? 0;
-        const end = this.cfg.time_window_end ?? 6;
+        // 配置读出的 value 可能是字符串（"23"/"6"），必须强转成数字，
+        // 否则 "23" <= "6" 会走字符串字典序比较，跨午夜窗口会被判错。
+        const rawStart = this.cfg.time_window_start ?? 0;
+        const rawEnd = this.cfg.time_window_end ?? 6;
+        const start = Number(rawStart);
+        const end = Number(rawEnd);
+        if (!Number.isFinite(start) || !Number.isFinite(end)) {
+            return true;
+        }
         if (start <= end) return hour >= start && hour < end;
         return hour >= start || hour < end;
     }
