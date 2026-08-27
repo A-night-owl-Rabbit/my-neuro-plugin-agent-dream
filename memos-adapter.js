@@ -6,7 +6,7 @@ const RETRY_DELAY_MS = 2000;
 class MemosAdapter {
     constructor(apiUrl, cfg) {
         this.apiUrl = apiUrl;
-        this.userId = 'agent_dream_default';
+        this.userId = 'feiniu_default';
         this.threshold = 0.4;
     }
 
@@ -69,7 +69,7 @@ class MemosAdapter {
             '食物 生活 习惯 爱好',
             '学习 知识 技术 问题',
             '记忆 历史 过去 回忆',
-            '角色 主人 聊天 互动',
+            '肥牛 主人 聊天 互动',
             '时间 事件 计划 任务',
             '朋友 关系 社交 网络',
         ];
@@ -131,12 +131,12 @@ class MemosAdapter {
         }
     }
 
-    async deleteMemory(memoryId, reason = '') {
+    async archiveMemory(memoryId, reason = '') {
         try {
-            return await this._withRetry(`deleteMemory(${memoryId})`, async () => {
+            return await this._withRetry(`archiveMemory(${memoryId})`, async () => {
                 const { data } = await axios.post(`${this.apiUrl}/memory/feedback`, {
                     memory_id: memoryId,
-                    feedback_type: 'delete',
+                    feedback_type: 'archive',
                     reason,
                     user_id: this.userId
                 }, { timeout: 15000 });
@@ -145,6 +145,11 @@ class MemosAdapter {
         } catch (err) {
             return { status: 'error', message: err.message };
         }
+    }
+
+    async deleteMemory(memoryId, reason = '') {
+        // 向后兼容旧调用名；梦系统现在只归档，不软删除。
+        return this.archiveMemory(memoryId, reason);
     }
 
     async correctMemory(memoryId, newContent, reason = '') {

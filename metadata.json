@@ -1,9 +1,9 @@
 {
   "name": "agent-dream",
   "displayName": "Agent Dream 梦系统",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "official",
-  "description": "仿生梦系统：让数字角色在深夜静默期自主入梦，通过记忆涟漪与语义联想生成梦境叙事，并可在梦中对记忆执行合并/删除/感悟类操作（需审批）。",
+  "description": "仿生梦系统：让肥牛在深夜自主入梦，通过记忆涟漪浪潮算法回忆、联想、重构记忆，产生梦境叙事，并可在梦中对记忆执行合并/归档/感悟操作（需审批）",
   "framework_version": ">=1.0.0",
   "main": "index.js",
   "lang": "js"

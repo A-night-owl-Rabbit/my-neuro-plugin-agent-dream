@@ -103,21 +103,39 @@ class DreamScheduler {
     }
 
     _loadState() {
+        // 文件不存在才是真正的"首次运行"，此时 lastDreamTime=0 是对的
+        if (!fs.existsSync(this._stateFile)) return;
+        let raw;
         try {
-            if (fs.existsSync(this._stateFile)) {
-                const data = JSON.parse(fs.readFileSync(this._stateFile, 'utf-8'));
-                this._lastDreamTime = data.lastDreamTime || 0;
-            }
-        } catch { /* ignore */ }
+            raw = fs.readFileSync(this._stateFile, 'utf-8');
+        } catch (err) {
+            console.warn(`[DreamScheduler] 状态文件读取失败，按安全冷却处理: ${err.message}`);
+            this._lastDreamTime = Date.now();
+            return;
+        }
+        try {
+            const data = JSON.parse(raw);
+            this._lastDreamTime = data.lastDreamTime || 0;
+        } catch (err) {
+            // 解析失败极可能是写入中途崩溃导致的文件截断，绝不能当成"从未做过梦"把冷却清零，
+            // 否则同一晚会立刻再做一次梦。保守起见按"刚做过梦"处理，保留一个安全冷却窗口。
+            console.warn(`[DreamScheduler] 状态文件损坏，保留安全冷却（不清零）: ${err.message}`);
+            this._lastDreamTime = Date.now();
+        }
     }
 
     _saveState() {
         try {
-            fs.writeFileSync(this._stateFile, JSON.stringify({
+            // 原子写：先写临时文件再 rename，避免写入中途崩溃留下截断的 JSON
+            const tmpFile = `${this._stateFile}.tmp`;
+            fs.writeFileSync(tmpFile, JSON.stringify({
                 lastDreamTime: this._lastDreamTime,
                 savedAt: new Date().toISOString()
             }, null, 2), 'utf-8');
-        } catch { /* ignore */ }
+            fs.renameSync(tmpFile, this._stateFile);
+        } catch (err) {
+            console.warn(`[DreamScheduler] 状态文件保存失败: ${err.message}`);
+        }
     }
 }
 

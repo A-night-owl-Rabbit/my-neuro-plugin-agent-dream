@@ -83,6 +83,19 @@ live-2d/plugins/community/agent-dream/
 
 ---
 
+## 更新日志
+
+### v1.1.0（2026-08-27）
+
+- **梦境模型下拉选择**：新增 `dream_provider_id` / `dream_model_id`，可直接选用 WebUI 已配置的提供商；旧版手填地址/Key 字段标记为弃用。
+- **唤醒上下文**：新增 `enable_wakeup_context`、`wakeup_context_ttl_minutes`、`wakeup_line_template`，梦醒后可把梦境残留注入主对话，让角色「带着梦醒来」。
+- **入梦/打断台词可配置**：新增 `drowsy_line`（犯困台词）与 `interrupted_line`（梦被打断台词）。
+- **归档阈值**：新增 `archive_importance_threshold`，低重要度梦境改为归档而非删除；移除旧的 `delete_importance_threshold` 等字段。
+- **模块更新**：审批窗口、睡眠过渡、梦境调度与 MemOS 适配等 10 个模块同步至本地最新实现。
+- **发布版安全**：`dream_api_key` 已清空；`dream_state.json` 保持出厂状态，运行时上下文文件不入库。
+
+---
+
 ## 想邀请你，做这只小牛的“云饲养员”
 
 做这个桌宠的初衷，其实是因为自己一个人工作学习的时候，总觉得屏幕里空落落的。看到大家都在使用，我就觉得熬夜写代码、调教AI的日子都亮闪闪的。🌟

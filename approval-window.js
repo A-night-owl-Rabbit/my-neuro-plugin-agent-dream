@@ -17,7 +17,7 @@ function render() {
 
     container.innerHTML = dreamLogs.map((log, logIdx) => {
         const ops = (log.operations || []).map((op, opIdx) => {
-            const typeLabels = { merge: '合并', delete: '删除', insight: '感悟' };
+            const typeLabels = { merge: '合并', delete: '归档', archive: '归档', insight: '感悟' };
             const typeClass = op.type || 'insight';
             const statusClass = op.status === 'pending_review' ? 'pending'
                 : op.status?.includes('approved') ? 'approved' : 'rejected';
@@ -28,8 +28,8 @@ function render() {
             let detail = '';
             if (op.type === 'merge') {
                 detail = `源记忆: ${(op.sourceMemoryIds || []).join(', ')}\n合并内容: ${op.newContent || ''}`;
-            } else if (op.type === 'delete') {
-                detail = `记忆ID: ${op.memoryId || ''}\n原因: ${op.reason || ''}\n内容: ${op.content || ''}`;
+            } else if (op.type === 'delete' || op.type === 'archive') {
+                detail = `记忆ID: ${op.memoryId || ''}\n归档原因: ${op.reason || ''}\n内容: ${op.content || ''}`;
             } else if (op.type === 'insight') {
                 detail = `感悟: ${op.insightContent || ''}`;
             }

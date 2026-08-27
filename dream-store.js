@@ -11,31 +11,55 @@ class DreamStore {
         this.cfg = cfg;
         this.pluginDir = pluginDir;
         this.dreamLogsDir = path.join(pluginDir, 'dream_logs');
+        this.lastDreamContextPath = path.join(pluginDir, 'last_dream_context.json');
+    }
+
+    // 便携默认目录：从插件目录派生，避免硬编码作者机器上的 K: 盘绝对路径（换机即 ENOENT）
+    _defaultSaveFolder() {
+        return path.join(this.pluginDir, 'dreams');
+    }
+
+    // 解析梦境保存目录并确保存在；配置目录（可能是别人机器的 K: 盘）创建失败时，
+    // 回退到插件目录下的便携目录，绝不向上抛出——避免 onStart 中途异常、调度器/监听悬挂。
+    _resolveSaveFolder() {
+        const configured = this.cfg.dream_save_folder || this._defaultSaveFolder();
+        try {
+            if (!fs.existsSync(configured)) {
+                fs.mkdirSync(configured, { recursive: true });
+            }
+            return configured;
+        } catch (err) {
+            const fallback = this._defaultSaveFolder();
+            try {
+                if (!fs.existsSync(fallback)) {
+                    fs.mkdirSync(fallback, { recursive: true });
+                }
+            } catch { /* ignore */ }
+            console.warn(`[DreamStore] 梦境目录创建失败，回退到 ${fallback}: ${err.message}`);
+            return fallback;
+        }
     }
 
     ensureDirs() {
-        const saveFolder = this.cfg.dream_save_folder ||
-            path.join(this.pluginDir, 'exported-dreams');
-        if (!fs.existsSync(saveFolder)) {
-            fs.mkdirSync(saveFolder, { recursive: true });
-        }
+        // 不再抛出：即便配置目录不可用也会回退，保证 onStart 不会因建目录失败而中断
+        this._resolveSaveFolder();
         if (!fs.existsSync(this.dreamLogsDir)) {
-            fs.mkdirSync(this.dreamLogsDir, { recursive: true });
+            try {
+                fs.mkdirSync(this.dreamLogsDir, { recursive: true });
+            } catch (err) {
+                console.warn(`[DreamStore] dream_logs 目录创建失败: ${err.message}`);
+            }
         }
     }
 
     saveDreamFile(narrative, dreamTree, curiosityList = []) {
-        const saveFolder = this.cfg.dream_save_folder ||
-            path.join(this.pluginDir, 'exported-dreams');
-        if (!fs.existsSync(saveFolder)) {
-            fs.mkdirSync(saveFolder, { recursive: true });
-        }
+        const saveFolder = this._resolveSaveFolder();
 
         const now = new Date();
         const dateStr = this._dateStr(now);
         const timeStr = this._timeStr(now);
 
-        const template = this.cfg.dream_filename_template || '{date}_梦境叙事.txt';
+        const template = this.cfg.dream_filename_template || '{date}肥牛的梦境.txt';
         const filename = template
             .replace('{date}', dateStr)
             .replace('{time}', timeStr);
@@ -52,7 +76,7 @@ class DreamStore {
 
         const headerLines = [
             '========================================',
-            `梦境叙事 - ${dateStr} ${this._fullTimeStr(now)}`,
+            `肥牛的梦境 - ${dateStr} ${this._fullTimeStr(now)}`,
             '========================================',
             '',
             `【记忆种子】`,
@@ -67,7 +91,7 @@ class DreamStore {
             const lines = curiosityList.map((c, i) => `${i + 1}. ${c.query}`);
             headerLines.push(
                 '【今晚翻到的书】',
-                `（图书馆共 ${curiosityList.length} 次取阅，详情见当日「梦中图书馆」文本文件）`,
+                `（图书馆共 ${curiosityList.length} 次取阅，详情见 当日"肥牛的图书馆.txt"）`,
                 ...lines,
                 ''
             );
@@ -86,7 +110,7 @@ class DreamStore {
     }
 
     /**
-     * 追加保存梦中图书馆查询记录到独立文件（默认 {date}_梦中图书馆.txt）
+     * 追加保存梦中图书馆查询记录到独立文件 {date}肥牛的图书馆.txt
      * 同日多次做梦会 append。
      * @param {Array<{query:string, result:string, insight:string, savedToMemos:boolean, timestamp?:string}>} entries
      * @param {string} dreamId
@@ -95,17 +119,13 @@ class DreamStore {
     saveDreamCuriosity(entries, dreamId) {
         if (!Array.isArray(entries) || entries.length === 0) return null;
 
-        const saveFolder = this.cfg.dream_save_folder ||
-            path.join(this.pluginDir, 'exported-dreams');
-        if (!fs.existsSync(saveFolder)) {
-            fs.mkdirSync(saveFolder, { recursive: true });
-        }
+        const saveFolder = this._resolveSaveFolder();
 
         const now = new Date();
         const dateStr = this._dateStr(now);
         const timeStr = this._timeStr(now);
 
-        const template = this.cfg.dream_curiosity_filename_template || '{date}_梦中图书馆.txt';
+        const template = this.cfg.dream_curiosity_filename_template || '{date}肥牛的图书馆.txt';
         const filename = template
             .replace('{date}', dateStr)
             .replace('{time}', timeStr);
@@ -113,7 +133,7 @@ class DreamStore {
 
         const sections = [
             '========================================',
-            `梦中图书馆 - ${dateStr} ${this._fullTimeStr(now)}`,
+            `肥牛的图书馆 - ${dateStr} ${this._fullTimeStr(now)}`,
             `（梦 ID: ${dreamId || '未知'}）`,
             '========================================',
             ''
@@ -130,7 +150,7 @@ class DreamStore {
                 '【书页全文】',
                 (e.result || '（无内容）').toString().trim(),
                 '',
-                '【梦中感悟】',
+                '【肥牛的感悟】',
                 (e.insight || '（无感悟）').toString().trim(),
                 ''
             );
@@ -155,6 +175,25 @@ class DreamStore {
 
         fs.writeFileSync(filePath, JSON.stringify(logData, null, 2), 'utf-8');
         return filePath;
+    }
+
+    saveLastDreamContext(context) {
+        if (!context || typeof context !== 'object') return null;
+        try {
+            fs.writeFileSync(this.lastDreamContextPath, JSON.stringify(context, null, 2), 'utf-8');
+            return this.lastDreamContextPath;
+        } catch {
+            return null;
+        }
+    }
+
+    loadLastDreamContext() {
+        try {
+            if (!fs.existsSync(this.lastDreamContextPath)) return null;
+            return JSON.parse(fs.readFileSync(this.lastDreamContextPath, 'utf-8'));
+        } catch {
+            return null;
+        }
     }
 
     loadDreamLogs() {
